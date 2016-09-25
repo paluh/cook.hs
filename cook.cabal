@@ -29,6 +29,8 @@ library
                      , Cook.Recipe.Config
                      , Cook.Recipe.FsTree
                      , Cook.Recipe.Template
+                     , Cook.Recipe.Provider
+                     , Cook.Recipe.Provider.Pkg
                      , Cook.Recipe.Util
                      , Cook.Catalog.Cjdns
                      , Cook.Catalog.Git
