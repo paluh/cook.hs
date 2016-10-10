@@ -38,6 +38,6 @@ buildRootfsFromCache suite cache path = withRecipeName "Debian.Rootfs.BuildRootf
   let suiteCache = cache </> (addTrailingPathSeparator . showSuite $ suite)
   liftIO $ createDirectoryIfMissing True cache
   suiteCached <- liftIO $ doesDirectoryExist suiteCache
-  unless suiteCached (void (runDebootrap suite path))
+  unless suiteCached (void (runDebootrap suite suiteCache))
   runProc "rsync" ["-H", "-a", suiteCache, path]
   return path
