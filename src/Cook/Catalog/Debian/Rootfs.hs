@@ -23,12 +23,13 @@ packages = [ "init"
            , "openssh-server"
            ]
 
-runDebootrap suite path =
+runDebootstrap :: Suite -> FilePath -> Recipe ()
+runDebootstrap suite path =
   run (debootstrap defaults{include=packages} suite path Nothing)
 
 buildRootfs :: Suite -> FilePath -> Recipe FilePath
 buildRootfs suite path = withRecipeName "Debian.Rootfs.BuildRootfs" $ do
-  runDebootrap suite path
+  runDebootstrap suite path
   return path
 
 type CacheDir = FilePath
@@ -38,6 +39,6 @@ buildRootfsFromCache suite cache path = withRecipeName "Debian.Rootfs.BuildRootf
   let suiteCache = cache </> (addTrailingPathSeparator . showSuite $ suite)
   liftIO $ createDirectoryIfMissing True cache
   suiteCached <- liftIO $ doesDirectoryExist suiteCache
-  unless suiteCached (void (runDebootrap suite suiteCache))
+  unless suiteCached (void (runDebootstrap suite suiteCache))
   runProc "rsync" ["-H", "-a", suiteCache, path]
   return path
