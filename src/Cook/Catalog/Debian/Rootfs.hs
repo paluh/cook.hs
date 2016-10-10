@@ -1,4 +1,4 @@
-module Cook.Catalog.Debian.Rootfs where
+module Cook.Catalog.Debian.Rootfs (buildRootfs, buildRootfsFromCache) where
 
 import Cook.Catalog.Debian.Debootstrap (debootstrap, defaults, include, Options, variant, Variant(Minbase))
 import Cook.Catalog.Debian.Suite (showSuite, stable, Suite)
@@ -12,9 +12,23 @@ import Data.Monoid ((<>))
 
 type RootFs = FilePath
 
+packages = [ "init"
+           , "ifupdown"
+           , "locales"
+           , "dialog"
+           , "isc-dhcp-client"
+           , "netbase"
+           , "net-tools"
+           , "iproute"
+           , "openssh-server"
+           ]
+
+runDebootrap suite path =
+  run (debootstrap defaults{include=packages} suite path Nothing)
+
 buildRootfs :: Suite -> FilePath -> Recipe FilePath
 buildRootfs suite path = withRecipeName "Debian.Rootfs.BuildRootfs" $ do
-  run (debootstrap defaults suite path Nothing)
+  runDebootrap suite path
   return path
 
 type CacheDir = FilePath
@@ -24,6 +38,6 @@ buildRootfsFromCache suite cache path = withRecipeName "Debian.Rootfs.BuildRootf
   let suiteCache = cache </> (addTrailingPathSeparator . showSuite $ suite)
   liftIO $ createDirectoryIfMissing True cache
   suiteCached <- liftIO $ doesDirectoryExist suiteCache
-  unless suiteCached (void (buildRootfs suite suiteCache))
+  unless suiteCached (void (runDebootrap suite path))
   runProc "rsync" ["-H", "-a", suiteCache, path]
   return path
