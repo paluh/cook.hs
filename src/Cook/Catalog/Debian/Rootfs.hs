@@ -18,16 +18,17 @@ type RootFs = FilePath
 type Package = String
 
 defaultPackages :: [Package]
-defaultPackages = [ "init"
-                  , "ifupdown"
-                  , "locales"
+defaultPackages = [ "dbus"
                   , "dialog"
-                  , "isc-dhcp-client"
-                  , "netbase"
-                  , "net-tools"
+                  , "ifupdown"
+                  , "init"
                   , "iproute"
+                  , "isc-dhcp-client"
+                  , "locales"
+                  , "net-tools"
+                  , "netbase"
                   , "openssh-server"
-                  , "dbus"
+                  , "sudo"
                   ]
 
 runDebootstrap :: Suite -> RootFs -> [Package] -> Recipe ()
